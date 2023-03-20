@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     //Подсказка к ПЗ: поделить на 3 отдельные функции и избавиться от index
+    //
     override fun setButtonText(index: Int, text: String) {
         when (index) {
             0 -> vb?.btnCounter1?.text = text
