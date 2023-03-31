@@ -1,8 +1,9 @@
-package com.android.counter
+package com.android.counter.model
 
 class CountersModel {
 
     val counters = mutableListOf(0, 0, 0)
+
     fun getCurrent(index: Int): Int {
         return counters[index]
     }
