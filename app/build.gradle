@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace 'com.android.counter'
-    compileSdk 32
+    namespace 'com.gb.githubclient'
+    compileSdk 33
 
     defaultConfig {
-        applicationId "com.android.counter"
-        minSdk 26
-        targetSdk 32
+        applicationId "com.gb.githubclient"
+        minSdk 29
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -25,12 +25,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -42,7 +40,7 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -60,5 +58,5 @@ dependencies {
     implementation "com.github.moxy-community:moxy-androidx:2.1.2"
 
     //RecyclerView
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
 }
