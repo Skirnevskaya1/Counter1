@@ -1,5 +1,6 @@
 package com.android.githubclient.mvp.presenter
 
+import android.util.Log
 import com.android.githubclient.mvp.presenter.list.IUserListPresenter
 import com.android.githubclient.mvp.model.GithubUsersRepo
 import com.android.githubclient.mvp.model.entity.GithubUser
@@ -7,6 +8,7 @@ import com.android.githubclient.mvp.view.UsersView
 import com.android.githubclient.mvp.view.list.IUserItemView
 import com.android.githubclient.navigation.IScreens
 import com.github.terrakok.cicerone.Router
+import io.reactivex.rxjava3.disposables.Disposable
 import moxy.MvpPresenter
 
 class UsersPresenter(
@@ -15,18 +17,25 @@ class UsersPresenter(
     val screens: IScreens,
 ) : MvpPresenter<UsersView>() {
 
+    companion object {
+        private const val TAG = "UsersPresenter"
+    }
+
     class UsersListPresenter : IUserListPresenter {
         val users = mutableListOf<GithubUser>()
         override var itemClickListener: ((IUserItemView) -> Unit)? = null
+
         override fun getCount() = users.size
 
         override fun bindView(view: IUserItemView) {
             val user = users[view.pos]
-            user.login.let { view.setLogin(it) }
+            view.setLogin(user.login)
         }
     }
 
     val usersListPresenter = UsersListPresenter()
+
+    private lateinit var usersDisposable: Disposable
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -35,23 +44,25 @@ class UsersPresenter(
 
         usersListPresenter.itemClickListener = { itemView ->
             val user = usersListPresenter.users[itemView.pos]
-            router.navigateTo(screens.user(user))
+            router.navigateTo(screens.user(user.id))
         }
     }
 
-    fun loadData() {
-        val users = usersRepo.getUsers()
-        usersListPresenter.users.addAll(users)
-        viewState.updateList()
+    private fun loadData() {
+        usersDisposable = usersRepo.getUsers()
+            .subscribe(
+                { users ->
+                    usersListPresenter.users.addAll(users)
+                    viewState.updateList()
+                },
+                { throwable -> Log.e(TAG, throwable.stackTraceToString()) }
+            )
     }
 
     fun backPressed(): Boolean {
+        usersDisposable.dispose()
         router.exit()
         return true
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewState.release()
-    }
 }

@@ -6,6 +6,6 @@ import kotlinx.android.parcel.Parcelize
 @Suppress("DEPRECATED_ANNOTATION")
 @Parcelize
 data class GithubUser(
-    val id: String,
+    val id: Int,
     val login: String,
 ) : Parcelable
