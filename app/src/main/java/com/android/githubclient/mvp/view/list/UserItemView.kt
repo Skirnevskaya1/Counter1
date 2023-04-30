@@ -1,5 +1,6 @@
 package com.android.githubclient.mvp.view.list
 
-interface IUserItemView  : IItemView {
+interface UserItemView : IItemView {
     fun setLogin(text: String)
+    fun loadAvatar(url: String)
 }

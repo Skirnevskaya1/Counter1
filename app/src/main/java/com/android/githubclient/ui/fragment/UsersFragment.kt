@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.githubclient.mvp.model.GithubUsersRepo
+import com.android.githubclient.App
+import com.android.githubclient.mvp.model.api.ApiHolder
+import com.android.githubclient.mvp.model.repo.retrofit.RetrofitGithubUsersRepo
 import com.android.githubclient.mvp.presenter.UsersPresenter
 import com.android.githubclient.mvp.view.UsersView
-import com.android.githubclient.App.Companion.instance
 import com.android.githubclient.ui.activity.BackButtonListener
 import com.android.githubclient.ui.adapter.UsersRVAdapter
+import com.android.githubclient.ui.image.GlideImageLoader
 import com.gb.githubclient.databinding.FragmentUsersBinding
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
@@ -25,17 +28,16 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     }
 
     val presenter: UsersPresenter by moxyPresenter {
-
-        UsersPresenter(GithubUsersRepo(), instance.router, instance.screens)
+        UsersPresenter(
+            AndroidSchedulers.mainThread(),
+            RetrofitGithubUsersRepo(ApiHolder.api),
+            App.instance.router, App.instance.screens
+        )
     }
 
     var adapter: UsersRVAdapter? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ) =
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         FragmentUsersBinding.inflate(inflater, container, false).also {
             _binding = it
         }.root
@@ -46,9 +48,9 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     }
 
     override fun init() {
-        binding.rvUsers.layoutManager = LinearLayoutManager(context)
-        adapter = UsersRVAdapter(presenter.usersListPresenter)
-        binding.rvUsers.adapter = adapter
+        binding.rvUsers?.layoutManager = LinearLayoutManager(context)
+        adapter = UsersRVAdapter(presenter.usersListPresenter, GlideImageLoader())
+        binding.rvUsers?.adapter = adapter
     }
 
     override fun updateList() {
@@ -60,5 +62,4 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     }
 
     override fun backPressed() = presenter.backPressed()
-
 }

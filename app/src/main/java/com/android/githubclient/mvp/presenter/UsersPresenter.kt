@@ -1,41 +1,35 @@
 package com.android.githubclient.mvp.presenter
 
-import android.util.Log
 import com.android.githubclient.mvp.presenter.list.IUserListPresenter
-import com.android.githubclient.mvp.model.GithubUsersRepo
 import com.android.githubclient.mvp.model.entity.GithubUser
+import com.android.githubclient.mvp.model.repo.IGithubUsersRepo
 import com.android.githubclient.mvp.view.UsersView
-import com.android.githubclient.mvp.view.list.IUserItemView
+import com.android.githubclient.mvp.view.list.UserItemView
 import com.android.githubclient.navigation.IScreens
 import com.github.terrakok.cicerone.Router
-import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.core.Scheduler
 import moxy.MvpPresenter
 
 class UsersPresenter(
-    val usersRepo: GithubUsersRepo,
+    val uiScheduler: Scheduler,
+    val usersRepo: IGithubUsersRepo,
     val router: Router,
     val screens: IScreens,
 ) : MvpPresenter<UsersView>() {
 
-    companion object {
-        private const val TAG = "UsersPresenter"
-    }
-
     class UsersListPresenter : IUserListPresenter {
         val users = mutableListOf<GithubUser>()
-        override var itemClickListener: ((IUserItemView) -> Unit)? = null
-
+        override var itemClickListener: ((UserItemView) -> Unit)? = null
         override fun getCount() = users.size
 
-        override fun bindView(view: IUserItemView) {
+        override fun bindView(view: UserItemView) {
             val user = users[view.pos]
-            view.setLogin(user.login)
+            user.login?.let { view.setLogin(it) }
+            user.avatarUrl?.let { view.loadAvatar(it) }
         }
     }
 
     val usersListPresenter = UsersListPresenter()
-
-    private lateinit var usersDisposable: Disposable
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -44,25 +38,30 @@ class UsersPresenter(
 
         usersListPresenter.itemClickListener = { itemView ->
             val user = usersListPresenter.users[itemView.pos]
-            router.navigateTo(screens.user(user.id))
+
+            router.navigateTo(screens.user(user))
         }
     }
 
-    private fun loadData() {
-        usersDisposable = usersRepo.getUsers()
-            .subscribe(
-                { users ->
-                    usersListPresenter.users.addAll(users)
-                    viewState.updateList()
-                },
-                { throwable -> Log.e(TAG, throwable.stackTraceToString()) }
-            )
+    fun loadData() {
+        usersRepo.getUsers()
+            .observeOn(uiScheduler)
+            .subscribe({ repos ->
+                usersListPresenter.users.clear()
+                usersListPresenter.users.addAll(repos)
+                viewState.updateList()
+            }, {
+                println("Error: ${it.message}")
+            })
     }
 
     fun backPressed(): Boolean {
-        usersDisposable.dispose()
         router.exit()
         return true
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        viewState.release()
+    }
 }
