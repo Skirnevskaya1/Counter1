@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.gb.githubclient'
+    namespace 'com.android.githubclient'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.gb.githubclient"
+        applicationId "com.android.githubclient"
         minSdk 29
         targetSdk 33
         versionCode 1
@@ -71,4 +71,8 @@ dependencies {
 
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.14.2'
+
+    //Room
+    implementation 'androidx.room:room-runtime:2.5.1'
+    kapt 'androidx.room:room-compiler:2.5.1'
 }

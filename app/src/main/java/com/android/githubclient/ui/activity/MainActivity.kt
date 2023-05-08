@@ -5,8 +5,8 @@ import com.android.githubclient.App
 import com.android.githubclient.mvp.presenter.MainPresenter
 import com.android.githubclient.mvp.view.MainView
 import com.android.githubclient.navigation.AndroidScreens
-import com.gb.githubclient.R
-import com.gb.githubclient.databinding.ActivityMainBinding
+import com.android.githubclient.R
+import com.android.githubclient.databinding.ActivityMainBinding
 import com.github.terrakok.cicerone.androidx.AppNavigator
 import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter

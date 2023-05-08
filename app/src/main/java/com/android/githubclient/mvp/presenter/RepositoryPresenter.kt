@@ -11,7 +11,7 @@ class RepositoryPresenter(val githubRepository: GithubRepository, val router: Ro
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
-        viewState.setId(githubRepository.id ?: "")
+        viewState.setId(githubRepository.id)
         viewState.setTitle(githubRepository.name ?: "")
         viewState.setForksCount((githubRepository.forksCount ?: 0).toString())
     }

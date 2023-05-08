@@ -1,20 +1,23 @@
 package com.android.githubclient.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.githubclient.App
 import com.android.githubclient.mvp.model.api.ApiHolder
-import com.gb.githubclient.databinding.FragmentUserBinding
+import com.android.githubclient.mvp.model.cache.room.RoomGithubRepositoriesCache
+import com.android.githubclient.databinding.FragmentUserBinding
 import com.android.githubclient.mvp.model.entity.GithubUser
+import com.android.githubclient.mvp.model.entity.room.Database
 import com.android.githubclient.mvp.model.repo.retrofit.RetrofitGithubRepositoriesRepo
 import com.android.githubclient.mvp.presenter.UserPresenter
 import com.android.githubclient.mvp.view.UserView
 import com.android.githubclient.ui.activity.BackButtonListener
 import com.android.githubclient.ui.adapter.ReposRVAdapter
+import com.android.githubclient.ui.network.AndroidNetworkStatus
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
@@ -28,10 +31,10 @@ class UserFragment : MvpAppCompatFragment(), UserView, BackButtonListener {
     val presenter: UserPresenter by moxyPresenter {
         val user = arguments?.getParcelable<GithubUser>(USER_ARG) as GithubUser
 
-        UserPresenter(
-            user,
-            AndroidSchedulers.mainThread(),
-            RetrofitGithubRepositoriesRepo(ApiHolder.api),
+        UserPresenter(user, AndroidSchedulers.mainThread(),
+            RetrofitGithubRepositoriesRepo(ApiHolder.api,
+                AndroidNetworkStatus(App.instance),
+                RoomGithubRepositoriesCache(Database.getInstance())),
             App.instance.router,
             App.instance.screens
         )
@@ -73,6 +76,7 @@ class UserFragment : MvpAppCompatFragment(), UserView, BackButtonListener {
         binding.tvLogin.text = text
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun updateList() {
         adapter?.notifyDataSetChanged()
     }

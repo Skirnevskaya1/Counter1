@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.githubclient.mvp.presenter.list.IRepositoryListPresenter
 import com.android.githubclient.mvp.view.list.RepositoryItemView
-import com.gb.githubclient.databinding.ItemRepositoryBinding
+import com.android.githubclient.databinding.ItemRepositoryBinding
 
 class ReposRVAdapter(val presenter: IRepositoryListPresenter) :
     RecyclerView.Adapter<ReposRVAdapter.ViewHolder>() {

@@ -11,13 +11,11 @@ import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.core.Scheduler
 import moxy.MvpPresenter
 
-class UserPresenter(
-    val user: GithubUser,
-    val mainThreadScheduler: Scheduler,
-    val repositoriesRepo: IGithubRepositoriesRepo,
-    val router: Router,
-    val screens: IScreens,
-) :
+class UserPresenter(val user: GithubUser,
+                    val mainThreadScheduler: Scheduler,
+                    val repositoriesRepo : IGithubRepositoriesRepo,
+                    val router: Router,
+                    val screens: IScreens) :
     MvpPresenter<UserView>() {
 
     class RepositoriesListPresenter : IRepositoryListPresenter {

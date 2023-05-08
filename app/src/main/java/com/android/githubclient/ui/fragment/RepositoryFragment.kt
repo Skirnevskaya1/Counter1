@@ -8,7 +8,7 @@ import com.android.githubclient.mvp.model.entity.GithubRepository
 import com.android.githubclient.mvp.presenter.RepositoryPresenter
 import com.android.githubclient.mvp.view.RepositoryView
 import com.android.githubclient.ui.activity.BackButtonListener
-import com.gb.githubclient.databinding.FragmentRepositoryBinding
+import com.android.githubclient.databinding.FragmentRepositoryBinding
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
