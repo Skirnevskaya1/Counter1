@@ -6,8 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-// В будущем это все будет внедряться с помощью dagger и object тут просто для временного удобства
-object ApiHolder {
+object ApiHolder { // Пояснить, что в будущем это все будет внедряться с помощью dagger и object тут просто для временного удобства
     val api: IDataSource by lazy {
         val gson = GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)

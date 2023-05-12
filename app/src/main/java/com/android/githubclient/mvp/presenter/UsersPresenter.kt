@@ -9,23 +9,25 @@ import com.android.githubclient.navigation.IScreens
 import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.core.Scheduler
 import moxy.MvpPresenter
+import javax.inject.Inject
 
-class UsersPresenter(
-    val uiScheduler: Scheduler,
-    val usersRepo: IGithubUsersRepo,
-    val router: Router,
-    val screens: IScreens,
-) : MvpPresenter<UsersView>() {
+class UsersPresenter(val uiScheduler: Scheduler) : MvpPresenter<UsersView>() {
+
+    @Inject lateinit var usersRepo: IGithubUsersRepo
+    @Inject
+    lateinit var screens: IScreens
+    @Inject lateinit var router: Router
 
     class UsersListPresenter : IUserListPresenter {
         val users = mutableListOf<GithubUser>()
         override var itemClickListener: ((UserItemView) -> Unit)? = null
+
         override fun getCount() = users.size
 
         override fun bindView(view: UserItemView) {
             val user = users[view.pos]
-            user.login.let { view.setLogin(it) }
-            user.avatarUrl?.let { view.loadAvatar(it) }
+            user.login?.let { view.setLogin(it) }
+            user.avatarUrl?.let {view.loadAvatar(it)}
         }
     }
 
@@ -38,7 +40,6 @@ class UsersPresenter(
 
         usersListPresenter.itemClickListener = { itemView ->
             val user = usersListPresenter.users[itemView.pos]
-
             router.navigateTo(screens.user(user))
         }
     }
@@ -58,10 +59,5 @@ class UsersPresenter(
     fun backPressed(): Boolean {
         router.exit()
         return true
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewState.release()
     }
 }

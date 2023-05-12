@@ -10,13 +10,17 @@ import com.android.githubclient.navigation.IScreens
 import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.core.Scheduler
 import moxy.MvpPresenter
+import javax.inject.Inject
 
-class UserPresenter(val user: GithubUser,
-                    val mainThreadScheduler: Scheduler,
-                    val repositoriesRepo : IGithubRepositoriesRepo,
-                    val router: Router,
-                    val screens: IScreens) :
-    MvpPresenter<UserView>() {
+class UserPresenter(
+    val uiScheduler: Scheduler,
+    val repositoriesRepo: IGithubRepositoriesRepo,
+    val user: GithubUser,
+) : MvpPresenter<UserView>() {
+    @Inject
+    lateinit var router: Router
+    @Inject
+    lateinit var screens: IScreens
 
     class RepositoriesListPresenter : IRepositoryListPresenter {
         val repositories = mutableListOf<GithubRepository>()
@@ -34,10 +38,7 @@ class UserPresenter(val user: GithubUser,
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
-
         loadData()
-
-        user.login.let { viewState.setLogin(it) }
 
         repositoriesListPresenter.itemClickListener = { itemView ->
             val repository = repositoriesListPresenter.repositories[itemView.pos]
@@ -47,7 +48,7 @@ class UserPresenter(val user: GithubUser,
 
     fun loadData() {
         repositoriesRepo.getRepositories(user)
-            .observeOn(mainThreadScheduler)
+            .observeOn(uiScheduler)
             .subscribe({ repositories ->
                 repositoriesListPresenter.repositories.clear()
                 repositoriesListPresenter.repositories.addAll(repositories)

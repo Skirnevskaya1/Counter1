@@ -24,24 +24,6 @@ import moxy.ktx.moxyPresenter
 @Suppress("DEPRECATION")
 class UserFragment : MvpAppCompatFragment(), UserView, BackButtonListener {
 
-    private var _binding: FragmentUserBinding? = null
-    private val binding
-        get() = _binding!!
-
-    val presenter: UserPresenter by moxyPresenter {
-        val user = arguments?.getParcelable<GithubUser>(USER_ARG) as GithubUser
-
-        UserPresenter(user, AndroidSchedulers.mainThread(),
-            RetrofitGithubRepositoriesRepo(ApiHolder.api,
-                AndroidNetworkStatus(App.instance),
-                RoomGithubRepositoriesCache(Database.getInstance())),
-            App.instance.router,
-            App.instance.screens
-        )
-    }
-
-    var adapter: ReposRVAdapter? = null
-
     companion object {
         private const val USER_ARG = "user"
 
@@ -52,37 +34,47 @@ class UserFragment : MvpAppCompatFragment(), UserView, BackButtonListener {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ) =
+    val presenter: UserPresenter by moxyPresenter {
+        val user = arguments?.getParcelable<GithubUser>(USER_ARG) as GithubUser
+        UserPresenter(
+            AndroidSchedulers.mainThread(),
+            RetrofitGithubRepositoriesRepo(ApiHolder.api, AndroidNetworkStatus(App.instance), RoomGithubRepositoriesCache(Database.getInstance())),
+            user
+        ).apply {
+            App.instance.appComponent.inject(this)
+        }
+    }
+
+    private var vb: FragmentUserBinding? = null
+
+    var adapter: ReposRVAdapter? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         FragmentUserBinding.inflate(inflater, container, false).also {
-            _binding = it
+            vb = it
         }.root
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        vb = null
     }
 
     override fun init() {
-        binding.rvRepositories.layoutManager = LinearLayoutManager(context)
+        vb?.rvRepositories?.layoutManager = LinearLayoutManager(context)
         adapter = ReposRVAdapter(presenter.repositoriesListPresenter)
-        binding.rvRepositories.adapter = adapter
+        vb?.rvRepositories?.adapter = adapter
     }
 
     override fun setLogin(text: String) {
-        binding.tvLogin.text = text
+        TODO("Not yet implemented")
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun updateList() {
         adapter?.notifyDataSetChanged()
     }
 
     override fun release() {
-        // TODO:
+        TODO("Not yet implemented")
     }
 
     override fun backPressed() = presenter.backPressed()

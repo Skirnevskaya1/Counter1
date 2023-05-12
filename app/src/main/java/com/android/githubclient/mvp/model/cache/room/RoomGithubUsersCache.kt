@@ -18,9 +18,11 @@ class RoomGithubUsersCache(val db: Database) : IGithubUsersCache {
 
     override fun putUsers(users: List<GithubUser>) = Completable.fromAction {
         val roomUsers = users.map { user ->
-            RoomGithubUser(user.id, user.login, user.avatarUrl ?: "", user.reposUrl ?: "")
+            RoomGithubUser(user.id,
+                user.login,
+                user.avatarUrl ?: "",
+                user.reposUrl ?: "")
         }
-
         db.userDao.insert(roomUsers)
     }.subscribeOn(Schedulers.io())
 }
